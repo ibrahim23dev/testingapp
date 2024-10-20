@@ -3,25 +3,163 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #000;
+  --primary-btn: #6d28d9;
+  --dark-text: #fff;
+  --secondary: #0f5677;
+  --tertiary: #fae41b;
+  --accent: #ff7900;
+  --bg: #fcf5f5;
+  --hot-bg: #d4d4d4;
+  --gray: #393838;
+  --border-color: #d2eadd;
+  --border-dark: #525255;
+  --footer-bg: #00026e;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+body,
+html {
+  scroll-behavior: smooth !important;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+body {
+  /* @apply dark:bg-[#202327]; */
+  /* @apply bg-[#FCF5F5]; */
+}
+
+/* Custom styles using Tailwind's @apply directive */
+
+/* Remove border from the datepicker input */
+.custom-datepicker-input {
+  @apply border-none outline-none shadow-none w-[80%]; /* Tailwind classes to remove border, outline, and shadow */
+}
+
+/* Remove border from the datepicker calendar popup */
+.custom-datepicker-calendar {
+  @apply border-none shadow-none; /* Tailwind classes to remove border and shadow from the calendar */
+}
+
+
+body {
+  background-color: #fff;
+
+  
+  font-family: 'Roboto', sans-serif;
+}
+
+.loader {
+  text-align: center;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  max-width: 35rem;
+  height: 30rem;
+  margin: 0 auto;
+}
+
+.wait {
+  margin: 5rem 0;
+}
+.iata_code {
+    font-size: 6rem;
+    opacity:0.3;
+  top: 52%;
+  position: absolute;
+  color: #0099cc;
+  }
+.departure_city {
+  left: 0;
+}
+
+.arrival_city {
+  right: 1.5rem;
+}
+
+.plane {
+  position: absolute;
+  margin-left:150px;
+  width: 100%;
+}
+
+.plane-img {
+  -webkit-animation: spin 2.5s linear infinite;
+  -moz-animation: spin 2.5s linear infinite;
+  animation: spin 2.5s linear infinite;
+}
+
+@-moz-keyframes spin {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+
+.earth-wrapper {
+  position: absolute;
+  margin: 0 auto;
+  width: 100%;
+  padding-top: 2.7rem;
+}
+
+.earth {
+  width: 160px;
+  height: 160px;
+  background: url("https://zupimages.net/up/19/34/6vlb.gif");
+  border-radius: 100%;
+  background-size: 340px;
+  animation: earthAnim 12s infinite linear;
+  margin: 0 auto;
+  border: 1px solid #CDD1D3;
+}
+
+@keyframes earthAnim {
+  0% {background-position-x: 0;}
+  100% {background-position-x: -340px;}
+}
+
+@media screen and (max-width: 420px) {
+  .departure_city {
+    left: 0;
+    right: 0;
+    top: 30%;
+    position: absolute;
+    margin: 0 auto;
+  }
+  
+  .arrival_city {
+    left: 0;
+    right: 0;
+    top: 93%;
+    position: absolute;
+    margin: 0 auto;
+  }
+  
+  
 }
