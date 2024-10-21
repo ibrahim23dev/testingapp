@@ -8,8 +8,8 @@ export default function page() {
     <div>
       <Navbar />
       <div className="bg-[#F0F4F4] px-5 md:px-48 min-h-screen">
-        <FlightFilter />
-        <FlightCard />
+    
+        
       </div>
     </div>
   );

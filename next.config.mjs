@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+const nextConfig = {
+    images: {
+      domains: ['fk-api.adbiyas.com'], // Just the domain without 'https://'
+    },
+  };
+  
+  export default nextConfig;
+  
