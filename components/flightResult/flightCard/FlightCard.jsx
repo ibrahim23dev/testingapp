@@ -12,6 +12,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function FlightCard() {
+
   const [cards, setCards] = useState([
     {
       id: 1,
@@ -43,6 +44,8 @@ export default function FlightCard() {
     },
   ]);
 
+
+
   const toggleFlightDetails = (id) => {
     setCards((prevCards) =>
       prevCards.map((card) =>
@@ -57,7 +60,7 @@ export default function FlightCard() {
     );
   };
 
-  
+
   const toggleRefundableDetails = (id) => {
     setCards((prevCards) =>
       prevCards.map((card) =>
@@ -71,6 +74,7 @@ export default function FlightCard() {
       )
     );
   };
+  
 
   return (
     <div className="space-y-5 pb-10">

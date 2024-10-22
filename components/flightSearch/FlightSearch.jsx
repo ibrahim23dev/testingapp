@@ -11,12 +11,14 @@ import { GiTreehouse } from "react-icons/gi";
 
 import biman from "@/public/images/biman-bd.png"; // Image import
 import arrowRight from "@/public/icons/arrow-right.svg"; // Icon import
-import credit from "@/public/icons/credit.svg"; // Icon import
-import arrowDown from "@/public/icons/down-arrow.svg"; // Icon import
-import arrowUp from "@/public/icons/arrowhead-up.png"; // Icon import
 import right from "@/public/icons/right-arrow1.svg"; // Icon import
 
 const FlightSearch = () => {
+  const [airportSuggestions, setAirportSuggestions] = useState({
+    origin: [],
+    destination: []
+  });
+
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,13 +26,17 @@ const FlightSearch = () => {
   const [returnDate, setReturnDate] = useState('');
   const [originCode, setOriginCode] = useState('');
   const [destinationCode, setDestinationCode] = useState('');
-  const [tripType, setTripType] = useState('OneWay');
+  const [tripType, setTripType] = useState('OneWay'); // Default trip type is OneWay
   const [passengerType, setPassengerType] = useState('ADT');
   const [passengerQuantity, setPassengerQuantity] = useState(1);
-  const [airportSuggestions, setAirportSuggestions] = useState({
-    origin: [],
-    destination: []
-  });
+
+  // For OpenJaw trip
+  const [secondDepartureDate, setSecondDepartureDate] = useState('');
+  const [secondOriginCode, setSecondOriginCode] = useState('');
+  const [secondDestinationCode, setSecondDestinationCode] = useState('');
+  const [thirdDepartureDate, setThirdDepartureDate] = useState('');
+  const [thirdOriginCode, setThirdOriginCode] = useState('');
+  const [thirdDestinationCode, setThirdDestinationCode] = useState('');
 
   const [isOriginFocused, setIsOriginFocused] = useState(false);
   const [isDestinationFocused, setIsDestinationFocused] = useState(false);
@@ -39,39 +45,78 @@ const FlightSearch = () => {
     setLoading(true);
     setError('');
 
-    if (!departureDate || !originCode || !destinationCode || (tripType === 'RoundTrip' && !returnDate)) {
+    // Validate required fields
+    if (!departureDate || !originCode || !destinationCode ||
+      (tripType === 'Return' && !returnDate) ||
+      (tripType === 'OpenJaw' && (!secondDepartureDate || !secondOriginCode || !secondDestinationCode || !thirdDepartureDate || !thirdOriginCode || !thirdDestinationCode))
+    ) {
       setError('Please fill in all required fields.');
       setLoading(false);
       return;
     }
 
+    let originDestinations = [];
+
+    // Handle OneWay trip type
+    if (tripType === 'OneWay') {
+      originDestinations.push({
+        "DepartureDateTime": `${departureDate}T00:00:00`,
+        "OriginLocationCode": originCode,
+        "DestinationLocationCode": destinationCode
+      });
+    }
+
+    // Handle Return trip type
+    if (tripType === 'Return') {
+      originDestinations.push(
+        {
+          "DepartureDateTime": `${departureDate}T00:00:00`,
+          "OriginLocationCode": originCode,
+          "DestinationLocationCode": destinationCode
+        },
+        {
+          "DepartureDateTime": `${returnDate}T00:00:00`,
+          "OriginLocationCode": destinationCode,
+          "DestinationLocationCode": originCode
+        }
+      );
+    }
+
+    // Handle OpenJaw trip type
+    if (tripType === 'OpenJaw') {
+      originDestinations.push(
+        {
+          "DepartureDateTime": `${departureDate}T00:00:00`,
+          "OriginLocationCode": originCode,
+          "DestinationLocationCode": destinationCode
+        },
+        {
+          "DepartureDateTime": `${secondDepartureDate}T00:00:00`,
+          "OriginLocationCode": secondOriginCode,
+          "DestinationLocationCode": secondDestinationCode
+        },
+        {
+          "DepartureDateTime": `${thirdDepartureDate}T00:00:00`,
+          "OriginLocationCode": thirdOriginCode,
+          "DestinationLocationCode": thirdDestinationCode
+        }
+      );
+    }
+
     try {
       const response = await axios.post('https://fk-api.adbiyas.com/api/b2c/search', {
-        "OriginDestinationInformations": [
-          {
-            "DepartureDateTime": `${departureDate}T00:00:00`,
-            "OriginLocationCode": originCode,
-            "DestinationLocationCode": destinationCode
-          },
-          ...(tripType === 'RoundTrip'
-            ? [{
-              "DepartureDateTime": `${returnDate}T00:00:00`,
-              "OriginLocationCode": destinationCode,
-              "DestinationLocationCode": originCode
-            }]
-            : [])
-        ],
+        "OriginDestinationInformations": originDestinations,
         "TravelPreferences": {
           "AirTripType": tripType
         },
-        "PricingSourceType": "Public",
+        "PricingSourceType": "Public", // or "Private", "All"
         "PassengerTypeQuantities": [
           {
-            "Code": passengerType,
+            "Code": passengerType, // "ADT" for adults, "CHD" for children, "INF" for infants
             "Quantity": passengerQuantity
           }
         ],
-        "RequestOptions": "Fifty"
+        "RequestOptions": "Fifty" // or any other number you need
       });
 
       if (response.data.success) {
@@ -85,6 +130,13 @@ const FlightSearch = () => {
       setLoading(false);
     }
   };
+
+
+
+
+
+
+
 
 
   ///handel Airport data here 
@@ -115,10 +167,9 @@ const FlightSearch = () => {
   };
 
 
-
-
   const [openDetailsIndex, setOpenDetailsIndex] = useState(null);
   const [openRefundableIndex, setOpenRefundableIndex] = useState(null);
+
 
   const toggleDetails = (index) => {
     setOpenDetailsIndex(openDetailsIndex === index ? null : index);
@@ -127,6 +178,57 @@ const FlightSearch = () => {
   const toggleRefundable = (index) => {
     setOpenRefundableIndex(openRefundableIndex === index ? null : index);
   };
+
+
+  //multicity
+  const [cities, setCities] = useState([
+    { from: "", to: "", date: "" },
+
+  ]);
+
+  const handleCityChange = (index, field, value) => {
+    const newCities = [...cities];
+    newCities[index][field] = value;
+    setCities(newCities);
+  };
+
+  const addCity = () => {
+    if (cities.length < 6) {
+      setCities([...cities, { from: "", to: "", date: "" }]);
+    }
+  };
+
+  const removeCity = (index) => {
+    const newCities = cities.filter((_, i) => i !== index);
+    setCities(newCities);
+  }
+
+
+
+  const [showModal, setShowModal] = useState(false);
+  const [passengers, setPassengers] = useState({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    classType: "Economy",
+  });
+
+  const totalTravelers = passengers.adults + passengers.children + passengers.infants;
+  const updatePassengerCount = (type, value) => {
+    setPassengers((prev) => ({
+      ...prev,
+      [type]: Math.max(0, prev[type] + value),
+    }));
+  };
+
+  const handleClassChange = (e) => {
+    setPassengers((prev) => ({ ...prev, classType: e.target.value }));
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
 
   return (
     <div className="w-full flex flex-col">
@@ -182,8 +284,8 @@ const FlightSearch = () => {
                   <input
                     type="radio"
                     className="text-sky-400/50 w-5 h-5"
-                    value="RoundTrip"
-                    checked={tripType === 'RoundTrip'}
+                    value="Return"
+                    checked={tripType === 'Return'}
                     onChange={(e) => setTripType(e.target.value)}
                   />
                   <span className="text-[18px]">Round Way</span>
@@ -192,8 +294,8 @@ const FlightSearch = () => {
                   <input
                     type="radio"
                     className="text-sky-400/50 w-5 h-5"
-                    value="MultiCity"
-                    checked={tripType === 'MultiCity'}
+                    value="OpenJaw"
+                    checked={tripType === 'OpenJaw'}
                     onChange={(e) => setTripType(e.target.value)}
                   />
                   <span className="text-[18px]">Multi City</span>
@@ -201,39 +303,57 @@ const FlightSearch = () => {
               </div>
 
               {/* Form Inputs */}
-              <div className="flex flex-wrap justify-center gap-6">
+
+              <div className="mt-5 flex items-center justify-evenly gap-5 flex-wrap">
+              <div className="flex  flex-wrap justify-center gap-6">
                 {/* Origin */}
-                <div className="flex flex-col items-start">
-                  <label className="text-gray-600 mb-2">From</label>
+               <div className="flex flex-col items-start">
+  <label className="text-gray-600 mb-2">From</label>
+  <div className="relative">
+    <input
+      type="text"
+      value={
+        originCode && originCode.city && originCode.iata 
+          ? `${originCode.city} (${originCode.iata}), ${originCode.name}` 
+          : originCode // This will show the selected airport details or allow typing 
+      }
+      onChange={(e) => handleAirportChange(e, 'origin')}
+      placeholder="Enter Origin (e.g., DAC)"
+      className="border p-3 h-20 rounded-lg w-64"
+      onFocus={() => setIsOriginFocused(true)}
+      onBlur={() => setTimeout(() => setIsOriginFocused(false), 50)} // Delay for selection
+    />
+    {isOriginFocused && airportSuggestions.origin.length > 0 && (
+      <ul className="absolute z-10 bg-white border border-gray-200 w-64 max-h-60 overflow-y-auto mt-1 rounded-lg shadow-lg">
+        {airportSuggestions.origin.map((airport, index) => (
+          <li
+            key={index}
+            onClick={() => {
+              setOriginCode(airport); // Store the entire airport object
+              setIsOriginFocused(false); // Close the dropdown after selection
+            }}
+            className="p-2 hover:bg-gray-100 cursor-pointer"
+          >
+            <span className="block text-center font-semibold text-black">
+              {airport.city}
+            </span>
+            <span className="block text-sm text-center text-gray-500">
+              {airport.name} ({airport.iata}), {airport.country}
+            </span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</div>
 
-                  <input
-                    type="text"
-                    value={originCode}
-                    onChange={(e) => handleAirportChange(e, 'origin')}
-                    placeholder="Enter Origin (e.g., DAC)"
-                    className="border p-3 h-20 rounded-lg w-64"
-                    onFocus={() => setIsOriginFocused(true)}
-                    onBlur={() => setTimeout(() => setIsOriginFocused(false), 200)} // Delay for selection
-                  />
-                  {isOriginFocused && airportSuggestions.origin.length > 0 && (
-                    <ul className="border w-64 max-h-40 overflow-y-auto">
-                      {airportSuggestions.origin.map((airport, index) => (
-                        <li
-                          key={index}
-                          onClick={() => setOriginCode(airport.iata)}
-                          className="p-2 hover:bg-gray-100 cursor-pointer"
-                        >
-                          {airport.name} ({airport.iata}), {airport.city}, {airport.country}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
 
-                </div>
 
                 {/* Destination */}
                 <div className="flex flex-col items-start">
+                  
                   <label className="text-gray-600 mb-2">To</label>
+                  <div className=' relative'>
                   <input
                     type="text"
                     value={destinationCode}
@@ -241,22 +361,31 @@ const FlightSearch = () => {
                     placeholder="Enter Destination (e.g., CXB)"
                     className="border p-3 h-20 rounded-lg w-64"
                     onFocus={() => setIsDestinationFocused(true)}
-                    onBlur={() => setTimeout(() => setIsDestinationFocused(false), 200)} // Delay for selection
+                    onBlur={() => setTimeout(() => setIsDestinationFocused(false), 50)} // Delay for selection
                   />
                   {isDestinationFocused && airportSuggestions.destination.length > 0 && (
-                    <ul className="border w-64 max-h-40 overflow-y-auto">
+                    <ul className="absolute z-10 bg-white border border-gray-200 w-64 max-h-60 overflow-y-auto mt-1 rounded-lg shadow-lg">
                       {airportSuggestions.destination.map((airport, index) => (
                         <li
                           key={index}
                           onClick={() => setDestinationCode(airport.iata)}
-                          className="p-2 hover:bg-gray-100 cursor-pointer"
+                           className="p-2 hover:bg-gray-100 cursor-pointer"
                         >
-                          {airport.name} ({airport.iata}), {airport.city}, {airport.country}
+                           <span className="block text-center font-semibold text-black"> {airport.city}</span>
+                           <span className="block text-sm text-center text-gray-500">
+                          {airport.name} ({airport.iata}), {airport.country}
+                              </span>
+                       
                         </li>
                       ))}
                     </ul>
                   )}
+                  </div>
+                  
                 </div>
+
+
+
 
                 {/* Journey Date */}
                 <div className="flex flex-col items-start">
@@ -269,8 +398,9 @@ const FlightSearch = () => {
                   />
                 </div>
 
+
                 {/* Return Date */}
-                {tripType === 'RoundTrip' && (
+                {tripType === 'Return' && (
                   <div className="flex flex-col items-start">
                     <label className="text-gray-600 mb-2">Return Date</label>
                     <input
@@ -282,29 +412,207 @@ const FlightSearch = () => {
                   </div>
                 )}
 
-                {/* Traveler & Class */}
-                <div className="flex flex-col items-start">
-                  <label className="text-gray-600 mb-2">Traveler, Class</label>
-                  <div className="flex items-center gap-4">
-                    <select
-                      value={passengerType}
-                      onChange={(e) => setPassengerType(e.target.value)}
-                      className="border p-3 h-20 rounded-lg"
-                    >
-                      <option value="ADT">Adult (ADT)</option>
-                      <option value="CHD">Child (CHD)</option>
-                      <option value="INF">Infant (INF)</option>
-                    </select>
-                    <input
-                      type="number"
-                      min="1"
-                      value={passengerQuantity}
-                      onChange={(e) => setPassengerQuantity(e.target.value)}
-                      className="border p-3 h-20 px-5 rounded-lg w-20"
-                    />
+                {/* OpenJaw Section */}
+                {tripType === 'OpenJaw' && (
+                  <div className="w-full">
+                    <div className="flex justify-center gap-6 flex-wrap">
+                      {/* Second Leg */}
+                      <div className="flex flex-col items-start">
+                        <label className="text-gray-600 mb-2">Second Origin</label>
+                        type="text"
+                        value={originCode}
+                        onChange={(e) => handleAirportChange(e, 'origin')}
+                        placeholder="Enter Origin (e.g., DAC)"
+                        className="border p-3 h-20 rounded-lg w-64"
+                        onFocus={() => setIsOriginFocused(true)}
+                        onBlur={() => setTimeout(() => setIsOriginFocused(false), 50)}
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <label className="text-gray-600 mb-2">Second Destination</label>
+                        <input
+                          type="text"
+                          value={secondDestinationCode}
+                          onChange={(e) => setSecondDestinationCode(e.target.value)}
+                          placeholder="Enter Second Destination"
+                          className="border p-3 h-12 rounded-lg w-64"
+                        />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <label className="text-gray-600 mb-2">Second Journey Date</label>
+                        <input
+                          type="date"
+                          value={secondDepartureDate}
+                          onChange={(e) => setSecondDepartureDate(e.target.value)}
+                          className="border p-3 h-12 rounded-lg w-64"
+                        />
+                      </div>
+
+                      {/* Third Leg */}
+                      <div className="flex flex-col items-start">
+                        <label className="text-gray-600 mb-2">Third Origin</label>
+                        <input
+                          type="text"
+                          value={thirdOriginCode}
+                          onChange={(e) => setThirdOriginCode(e.target.value)}
+                          placeholder="Enter Third Origin"
+                          className="border p-3 h-12 rounded-lg w-64"
+                        />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <label className="text-gray-600 mb-2">Third Destination</label>
+                        <input
+                          type="text"
+                          value={thirdDestinationCode}
+                          onChange={(e) => setThirdDestinationCode(e.target.value)}
+                          placeholder="Enter Third Destination"
+                          className="border p-3 h-12 rounded-lg w-64"
+                        />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <label className="text-gray-600 mb-2">Third Journey Date</label>
+                        <input
+                          type="date"
+                          value={thirdDepartureDate}
+                          onChange={(e) => setThirdDepartureDate(e.target.value)}
+                          className="border p-3 h-12 rounded-lg w-64"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
+
+<div className="relative flex flex-col items-start">
+      {/* Traveler & Class Label */}
+      <label className="text-gray-600 mb-2">Traveler, Class</label>
+
+      {/* Input field that triggers modal */}
+      <div className="flex items-center gap-4">
+      <input
+          type="text"
+          value={`${totalTravelers} Traveler${totalTravelers > 1 ? "s" : ""} • ${passengers.classType}`}
+          onClick={() => setShowModal(true)}
+          readOnly
+          className="border text-[20px] font-semibold p-3 h-20 rounded-lg w-80 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        />
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="absolute left-0 mt-4 bg-white rounded-lg shadow-lg p-6 w-full z-50">
+          <h2 className="text-lg font-semibold mb-4">Select Travelers and Class</h2>
+
+          {/* Adult Count */}
+          <div className="flex justify-between mb-3">
+            <div>
+              <p className="font-medium">Adults</p>
+              <p className="text-gray-500 text-sm">12 years and above</p>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={() => updatePassengerCount("adults", -1)}
+                className="border rounded-full w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300"
+              >
+                -
+              </button>
+              <p className="mx-3">{passengers.adults}</p>
+              <button
+                onClick={() => updatePassengerCount("adults", 1)}
+                className="border rounded-full w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Children Count */}
+          <div className="flex justify-between mb-3">
+            <div>
+              <p className="font-medium">Children</p>
+              <p className="text-gray-500 text-sm">2-11 years</p>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={() => updatePassengerCount("children", -1)}
+                className="border rounded-full w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300"
+              >
+                -
+              </button>
+              <p className="mx-3">{passengers.children}</p>
+              <button
+                onClick={() => updatePassengerCount("children", 1)}
+                className="border rounded-full w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Infants Count */}
+          <div className="flex justify-between mb-3">
+            <div>
+              <p className="font-medium">Infants</p>
+              <p className="text-gray-500 text-sm">Below 2 years</p>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={() => updatePassengerCount("infants", -1)}
+                className="border rounded-full w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300"
+              >
+                -
+              </button>
+              <p className="mx-3">{passengers.infants}</p>
+              <button
+                onClick={() => updatePassengerCount("infants", 1)}
+                className="border rounded-full w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Class Selection */}
+          <div className="mb-5">
+            <p className="font-medium mb-2">Class</p>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="Economy"
+                  checked={passengers.classType === "Economy"}
+                  onChange={handleClassChange}
+                  className="mr-2"
+                />
+                Economy
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="Business"
+                  checked={passengers.classType === "Business"}
+                  onChange={handleClassChange}
+                  className="mr-2"
+                />
+                Business
+              </label>
+            </div>
+          </div>
+
+          {/* Done Button */}
+          <div className="flex justify-end">
+            <button
+              onClick={closeModal}
+              className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
               </div>
+
+              </div>
+             
 
               {/* Search Button */}
               <button
@@ -349,11 +657,10 @@ const FlightSearch = () => {
             {flights.map((flight, index) => {
               const segment = flight?.segments?.[0];
               const fare = flight?.fares;
-              const imageurl=flight?.airline_img;
+              const imageurl = flight?.airline_img;
               console.log(flights)
               if (!segment || !fare) return null;
 
-              
               return (
                 <div key={index} className="space-y-8">
                   <div className="max-w-[1000px] bg-white relative rounded-2xl shadow-md">
@@ -366,9 +673,9 @@ const FlightSearch = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 md:h-[160px]">
                       {/* Airline Logo and Name */}
                       <div className="flex items-center gap-4">
-                        <Image src={imageurl} alt="airline logo"  width={50} 
-              height={50} 
-              priority={true}  className="w-19 h-auto" />
+                        <Image src={imageurl} alt="airline logo" width={50}
+                          height={50}
+                          priority={true} className="w-19 h-auto" />
                         <span className="text-sm font-medium">{segment?.operating_airline || 'Unknown Airline'}</span>
                       </div>
 
@@ -453,7 +760,7 @@ export default FlightSearch;
 
 //Flight result components
 
-const SearchResult=({ flight, segment, fare, imgUrl, index, openDetailsIndex, toggleDetails, openRefundableIndex, toggleRefundable })=>{
+const SearchResult = ({ flight, segment, fare, imgUrl, index, openDetailsIndex, toggleDetails, openRefundableIndex, toggleRefundable }) => {
 
   return (
     <div className="space-y-8">
