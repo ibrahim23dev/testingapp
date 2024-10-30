@@ -8,6 +8,7 @@ import { MdFlightTakeoff } from "react-icons/md";
 import { LiaCcVisa } from "react-icons/lia";
 import { RiHotelFill } from "react-icons/ri";
 import { GiTreehouse } from "react-icons/gi";
+import { CiSearch } from "react-icons/ci";
 
 import biman from "@/public/images/biman-bd.png"; // Image import
 import arrowRight from "@/public/icons/arrow-right.svg"; // Icon import
@@ -15,6 +16,11 @@ import right from "@/public/icons/right-arrow1.svg"; // Icon import
 import Link from 'next/link';
 
 const FlightSearch = () => {
+
+
+
+
+
   const [airportSuggestions, setAirportSuggestions] = useState({
     origin: [],
     destination: []
@@ -133,7 +139,29 @@ const FlightSearch = () => {
   };
 
 
+  const [cityData, setCityData] = useState([
+    { originCode: '', destinationCode: '', journeyDate: '' }
+  ]);
 
+  // Function to handle input change
+  const handleInputChange = (index, field, value) => {
+    const updatedCityData = [...cityData];
+    updatedCityData[index][field] = value;
+    setCityData(updatedCityData);
+  };
+
+  // Function to add a new city entry
+  const addCity = () => {
+    if (cityData.length < 4) {
+      setCityData([...cityData, { originCode: '', destinationCode: '', journeyDate: '' }]);
+    }
+  };
+
+  // Function to remove a city entry
+  const removeCity = (index) => {
+    const updatedCityData = cityData.filter((_, i) => i !== index);
+    setCityData(updatedCityData);
+  };
 
 
 
@@ -193,17 +221,8 @@ const FlightSearch = () => {
     setCities(newCities);
   };
 
-  const addCity = () => {
-    if (cities.length < 6) {
-      setCities([...cities, { from: "", to: "", date: "" }]);
-    }
-  };
-
-  const removeCity = (index) => {
-    const newCities = cities.filter((_, i) => i !== index);
-    setCities(newCities);
-  }
-
+  
+  
 
 
   const [showModal, setShowModal] = useState(false);
@@ -238,9 +257,9 @@ const FlightSearch = () => {
 
         {/* Form Section */}
         <div className="justify-center mt-28 flex">
-          <div className="justify-center flex flex-col">
+          <div className="justify-center items-center flex flex-col">
             {/* Tabs for Flight, Hotel, etc. */}
-            <div className="flex ml-[220px] bg-white shadow-lg w-[700px] py-5 px-8 rounded-t-[20px] justify-center gap-6">
+            <div className="flex  bg-white shadow-lg items-center w-[700px] py-5 px-8 rounded-t-[20px] justify-center gap-6">
               <button className="py-2 px-4 flex items-center gap-2 border-b-4 border-blue-500">
                 <span className="text-blue-600">
                   <MdFlightTakeoff className="w-10 h-10" />
@@ -268,7 +287,7 @@ const FlightSearch = () => {
             </div>
 
             {/* Form */}
-            <div className="flex flex-col items-center px-12 py-8 bg-white shadow-lg rounded-[20px]">
+            <div className="flex flex-col max-w-[1600px] items-center px-8 py-8 bg-white shadow-lg rounded-[20px]">
               {/* Trip Type Selection */}
               <div className="flex justify-center gap-8 mb-8">
                 <label className="flex items-center gap-2">
@@ -308,7 +327,9 @@ const FlightSearch = () => {
               <div className="mt-5 flex items-center justify-evenly gap-5 flex-wrap">
               <div className="flex  flex-wrap justify-center gap-6">
                 {/* Origin */}
-               <div className="flex flex-col items-start">
+                <div className="flex flex-col items-start">
+
+
   <label className="text-gray-600 mb-2">From</label>
   <div className="relative">
     <input
@@ -406,75 +427,6 @@ const FlightSearch = () => {
                       onChange={(e) => setReturnDate(e.target.value)}
                       className="border p-3 h-20 rounded-lg w-64"
                     />
-                  </div>
-                )}
-
-                {/* OpenJaw Section */}
-                {tripType === 'OpenJaw' && (
-                  <div className="w-full">
-                    <div className="flex justify-center gap-6 flex-wrap">
-                      {/* Second Leg */}
-                      <div className="flex flex-col items-start">
-                        <label className="text-gray-600 mb-2">Second Origin</label>
-                        type="text"
-                        value={originCode}
-                        onChange={(e) => handleAirportChange(e, 'origin')}
-                        placeholder="Enter Origin (e.g., DAC)"
-                        className="border p-3 h-20 rounded-lg w-64"
-                        onFocus={() => setIsOriginFocused(true)}
-                        onBlur={() => setTimeout(() => setIsOriginFocused(false), 50)}
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <label className="text-gray-600 mb-2">Second Destination</label>
-                        <input
-                          type="text"
-                          value={secondDestinationCode}
-                          onChange={(e) => setSecondDestinationCode(e.target.value)}
-                          placeholder="Enter Second Destination"
-                          className="border p-3 h-12 rounded-lg w-64"
-                        />
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <label className="text-gray-600 mb-2">Second Journey Date</label>
-                        <input
-                          type="date"
-                          value={secondDepartureDate}
-                          onChange={(e) => setSecondDepartureDate(e.target.value)}
-                          className="border p-3 h-12 rounded-lg w-64"
-                        />
-                      </div>
-
-                      {/* Third Leg */}
-                      <div className="flex flex-col items-start">
-                        <label className="text-gray-600 mb-2">Third Origin</label>
-                        <input
-                          type="text"
-                          value={thirdOriginCode}
-                          onChange={(e) => setThirdOriginCode(e.target.value)}
-                          placeholder="Enter Third Origin"
-                          className="border p-3 h-12 rounded-lg w-64"
-                        />
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <label className="text-gray-600 mb-2">Third Destination</label>
-                        <input
-                          type="text"
-                          value={thirdDestinationCode}
-                          onChange={(e) => setThirdDestinationCode(e.target.value)}
-                          placeholder="Enter Third Destination"
-                          className="border p-3 h-12 rounded-lg w-64"
-                        />
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <label className="text-gray-600 mb-2">Third Journey Date</label>
-                        <input
-                          type="date"
-                          value={thirdDepartureDate}
-                          onChange={(e) => setThirdDepartureDate(e.target.value)}
-                          className="border p-3 h-12 rounded-lg w-64"
-                        />
-                      </div>
-                    </div>
                   </div>
                 )}
 
@@ -606,6 +558,119 @@ const FlightSearch = () => {
         </div>
       )}
     </div>
+
+
+
+
+                {/* OpenJaw Section */}
+                {tripType === 'OpenJaw' && (
+  <div className="flex flex-col space-y-6">
+    <div className="flex flex-col max-w-[900px] md:flex-row md:space-x-6">
+      {/* Origin */}
+      <div className="flex flex-col items-start mb-4 md:mb-0">
+        <label className="text-gray-600 mb-2">From</label>
+        <div className="relative">
+          <input
+            type="text"
+            value={
+              originCode && originCode.city && originCode.iata 
+                ? `${originCode.city} (${originCode.iata}), ${originCode.name}` 
+                : originCode 
+            }
+            onChange={(e) => handleAirportChange(e, 'origin')}
+            placeholder="Enter Origin (e.g., DAC)"
+            className="border p-3 h-16 rounded-lg w-64" // Fixed height
+            onFocus={() => setIsOriginFocused(true)}
+            onBlur={() => setTimeout(() => setIsOriginFocused(false), 50)}
+          />
+          {isOriginFocused && airportSuggestions.origin.length > 0 && (
+            <ul className="absolute z-10 bg-white border border-gray-200 w-64 max-h-60 overflow-y-auto mt-1 rounded-lg shadow-lg">
+              {airportSuggestions.origin.map((airport, index) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setOriginCode(airport);
+                    setIsOriginFocused(false);
+                  }}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <span className="block text-center font-semibold text-black">
+                    {airport.city}
+                  </span>
+                  <span className="block text-sm text-center text-gray-500">
+                    {airport.name} ({airport.iata}), {airport.country}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/* Destination */}
+      <div className="flex flex-col items-start mb-4 md:mb-0">
+        <label className="text-gray-600 mb-2">To</label>
+        <div className="relative">
+          <input
+            type="text"
+            value={destinationCode}
+            onChange={(e) => handleAirportChange(e, 'destination')}
+            placeholder="Enter Destination (e.g., CXB)"
+            className="border p-3 h-16 rounded-lg w-64" // Fixed height
+            onFocus={() => setIsDestinationFocused(true)}
+            onBlur={() => setTimeout(() => setIsDestinationFocused(false), 50)}
+          />
+          {isDestinationFocused && airportSuggestions.destination.length > 0 && (
+            <ul className="absolute z-10 bg-white border border-gray-200 w-64 max-h-60 overflow-y-auto mt-1 rounded-lg shadow-lg">
+              {airportSuggestions.destination.map((airport, index) => (
+                <li
+                  key={index}
+                  onClick={() => setDestinationCode(airport.iata)}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <span className="block text-center font-semibold text-black">
+                    {airport.city}
+                  </span>
+                  <span className="block text-sm text-center text-gray-500">
+                    {airport.name} ({airport.iata}), {airport.country}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/* Journey Date */}
+      <div className="flex flex-col items-start mb-4 md:mb-0">
+        <label className="text-gray-600 mb-2">Journey Date</label>
+        <input
+          type="date"
+          value={departureDate}
+          onChange={(e) => setDepartureDate(e.target.value)}
+          className="border h-16 p-3 rounded-lg w-64" // Fixed height
+        />
+      </div>
+
+      {/* Add City Button */}
+      <div className="flex flex-col items-start mb-4 md:mb-0">
+        <label className="text-gray-600 mb-2">Add City</label>
+        <button
+          onClick={handleCityChange} // Add your function here
+          className="border h-16 p-3 rounded-lg w-64 bg-blue-600 text-white hover:bg-blue-700 transition duration-200" // Fixed height and background color
+        >
+          Add City
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
+
+
               </div>
 
               </div>
@@ -616,9 +681,14 @@ const FlightSearch = () => {
                 onClick={fetchFlightData}
                 className="mt-6 bg-purple-600 text-white px-10 py-3 rounded-lg text-lg font-semibold flex items-center gap-2"
               >
-                <i className="fas fa-search"></i> Search Flights
+                <div className=' flex items-center justify-center gap-2'> <span><CiSearch className=' w-5 h-5 text-white' /></span>
+                <span> Search Flights</span></div>
+               
+                
               </button>
             </div>
+
+
           </div>
         </div>
 
