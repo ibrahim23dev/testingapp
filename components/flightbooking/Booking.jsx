@@ -6,7 +6,7 @@ const Booking = () => {
   const [title, setTitle] = useState("MR"); // State for title selection (MR, MS, MRS)
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className=" min-h-screen p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-xl font-semibold text-blue-900">
@@ -14,20 +14,36 @@ const Booking = () => {
         </div>
 
         {/* Flight Info Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+        <div className="bg-white rounded-lg shadow-lg p-9 mb-4">
           <h2 className="text-lg font-bold text-blue-900">DAC-CXB</h2>
           <div className="flex justify-between items-center mt-2">
-            <div>
-              <p className="text-gray-700">Biman Bangladesh Airlines</p>
-              <p className="text-sm text-gray-500">BG 435 | DH8</p>
-              <p className="text-xl font-semibold text-gray-800">11:45</p>
+            <div className=" w-full">
+              <div className=" w-full flex items-center justify-between">
+                <span className=" flex flex-col space-y-3"> <p className="text-gray-700">Biman Bangladesh Airlines</p>
+                <p className="text-sm text-gray-500">BG 435 | DH8</p>
+                </span>
+                <span className="text-gray-700">Economy</span>
+              </div>
+             <div className=" flex items-center justify-center">
+              <span> Non-Stop</span>
+             </div>
+             <div className=" mt-3 flex justify-between items-center">
+             <div> <p className="text-xl font-semibold text-gray-800">11:45</p></div>
+             <div> <p className="text-xl font-semibold text-gray-800">13:00</p></div>
+
+             </div>
+           
+             <div className=" flex items-center justify-between">
+              <div>   <p className="text-sm text-gray-500">Sun, 03 Nov, 2024</p></div>
+              <div>
+             
               <p className="text-sm text-gray-500">Sun, 03 Nov, 2024</p>
             </div>
-            <p className="text-sm text-gray-500">Non Stop</p>
-            <div>
-              <p className="text-xl font-semibold text-gray-800">13:00</p>
-              <p className="text-sm text-gray-500">Sun, 03 Nov, 2024</p>
             </div>
+            
+            </div>
+           
+            
           </div>
         </div>
 

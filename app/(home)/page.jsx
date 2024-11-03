@@ -8,7 +8,7 @@ import React from "react";
 
 export default function Home() {
   return (
-    <>
+    <div className=" w-full overflow-x-hidden">
       <FlightSearch />
       <div className="px-5 md:px-48 py-20 bg-[#FCF5F5]">
         <BannerAds />
@@ -17,6 +17,6 @@ export default function Home() {
         <Ads />
         <Packages />
       </div>
-    </>
+    </div>
   );
 }

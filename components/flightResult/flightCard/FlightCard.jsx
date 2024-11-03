@@ -5,13 +5,35 @@ import right from "@/public/icons/right-arrow1.svg";
 import arrowDown from "@/public/icons/down-arrow.svg";
 import arrowUp from "@/public/icons/arrowhead-up (1).png"; 
 import { IoIosArrowUp } from "react-icons/io";
-
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import axios from "axios";
 // Use an up-arrow icon for the dropdown toggle
 import credit from "@/public/icons/credit.svg";
 import Image from "next/image";
-import { useState } from "react";
+
 
 export default function FlightCard() {
+
+  const router =useRouter();
+  const {type,from,to,journeyDate,travellers, class:travelClass}=router.query();
+  const [flight,setFlight]=useState([]);
+
+  useEffect(() => {
+    if (from && to && journeyDate) {
+      const fetchFlights = async () => {
+        try {
+          const response = await axios.get('https://fk-api.adbiyas.com/api/b2c/search', {
+            params: { type, from, to, journeyDate, travellers, class: travelClass },
+          });
+          setFlights(response.data);
+        } catch (error) {
+          console.error("Error fetching flights", error);
+        }
+      };
+      fetchFlights();
+    }
+  }, [from, to, journeyDate, type, travellers, travelClass]);
 
   const [cards, setCards] = useState([
     {
