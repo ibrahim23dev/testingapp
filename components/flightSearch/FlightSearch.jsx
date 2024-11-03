@@ -266,21 +266,21 @@ const FlightSearch = () => {
         <div className="flex justify-center items-center px-4 md:px-8 lg:px-16 mt-28">
   <div className="flex relative flex-col items-center w-full max-w-[1600px]">
     {/* Tabs for Flight, Hotel, etc. */}
-    <div className="flex lg:w-[700px] sm:w-[500px] bg-white shadow-lg items-center w-full md:w-[700px]  py-5 px-4 md:px-8 rounded-t-[20px] justify-center gap-4 md:gap-6">
-      <button className="py-2 ml-2 px-2 md:px-4 flex items-center gap-2 border-b-4 border-blue-500">
-        <MdFlightTakeoff className="text-blue-600 w-8 md:w-10 h-8 md:h-10" />
+    <div className="flex  lg:w-[700px] sm:w-[500px] bg-white shadow-lg items-center w-full md:w-[700px]  py-5 px-4 md:px-8 rounded-t-[20px] justify-center gap-0.5 md:gap-6">
+      <button className="py-2 ml-2 px-2 md:px-4 flex items-center w-[270px] border-b-4 border-blue-500">
+        <MdFlightTakeoff className="text-blue-600 w-6 md:w-10 h-6 md:h-10" />
         <span className="text-blue-600 text-[16px] md:text-[20px] font-semibold">Flight</span>
       </button>
-      <button className="py-2 px-2 md:px-4 flex items-center gap-2 text-gray-500">
-        <RiHotelFill className="w-8 md:w-10 h-8 md:h-10" />
+      <button className="py-2 px-2 md:px-4 flex items-center gap-1 text-gray-500">
+        <RiHotelFill className="w-5 md:w-10 h-5 md:h-10" />
         <span className="text-[16px] md:text-[20px] font-semibold">Hotel</span>
       </button>
-      <button className="py-2 px-2 md:px-4 flex items-center gap-2 text-gray-500">
-        <GiTreehouse className="w-8 md:w-10 h-8 md:h-10" />
+      <button className="py-2 px-2 md:px-4 flex items-center gap-1 text-gray-500">
+        <GiTreehouse className="w-5 md:w-10 h-5 md:h-10" />
         <span className="text-[16px] md:text-[20px] font-semibold">Tour</span>
       </button>
-      <button className="py-2 mr-3 px-2 md:px-4 flex items-center gap-2 text-gray-500">
-        <LiaCcVisa className="w-8 md:w-10 h-8 md:h-10" />
+      <button className="py-2 mr-3 px-2 md:px-4 flex items-center gap-1 text-gray-500">
+        <LiaCcVisa className="w-5 md:w-10 h-5 md:h-10" />
         <span className="text-[16px] md:text-[20px] font-semibold">Visa</span>
       </button>
     </div>
@@ -336,7 +336,7 @@ const FlightSearch = () => {
               }
               onChange={(e) => handleAirportChange(e, 'origin')}
               placeholder="Enter Origin (e.g., DAC)"
-              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[350px] lg:w-64 md:w-64"
+              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
               onFocus={() => setIsOriginFocused(true)}
               onBlur={() => setTimeout(() => setIsOriginFocused(false), 50)}
             />
@@ -371,7 +371,7 @@ const FlightSearch = () => {
               value={destinationCode}
               onChange={(e) => handleAirportChange(e, 'destination')}
               placeholder="Enter Destination (e.g., CXB)"
-              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[350px] lg:w-64 md:w-64"
+              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
               onFocus={() => setIsDestinationFocused(true)}
               onBlur={() => setTimeout(() => setIsDestinationFocused(false), 50)}
             />
@@ -401,7 +401,7 @@ const FlightSearch = () => {
             type="date"
             value={departureDate}
             onChange={(e) => setDepartureDate(e.target.value)}
-            className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[350px] lg:w-64 md:w-64"
+            className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
           />
         </div>
 
@@ -413,7 +413,7 @@ const FlightSearch = () => {
               type="date"
               value={returnDate}
               onChange={(e) => setReturnDate(e.target.value)}
-              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[350px] lg:w-64 md:w-64"
+              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
             />
           </div>
         )}
@@ -430,7 +430,7 @@ const FlightSearch = () => {
       value={`${totalTravelers} Traveler${totalTravelers > 1 ? "s" : ""} • ${passengers.classType}`}
       onClick={() => setShowModal(true)}
       readOnly
-      className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[350px] lg:w-64 md:w-64"
+      className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
     />
   </div>
 
