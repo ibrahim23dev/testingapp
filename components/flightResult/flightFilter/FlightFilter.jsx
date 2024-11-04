@@ -1,12 +1,32 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import filter from "@/public/icons/filter.svg";
 import down from "@/public/icons/down-arrow.svg";
-import clock from "@/public/icons/clock.svg";
+import { TbClockFilled } from "react-icons/tb";
+
 export default function FlightFilter() {
   const [stop, setStop] = useState([]);
   const [flightType, setFlightType] = useState();
+
+  const [time, setTime] = useState(1800); // 30 minutes in seconds
+
+  useEffect(() => {
+    if (time > 0) {
+      const timerId = setInterval(() => {
+        setTime((prevTime) => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(timerId); // Cleanup on unmount
+    }
+  }, [time]);
+
+  // Format time as MM:SS
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
 
   return (
     <div className="py-5 ">
@@ -168,13 +188,20 @@ export default function FlightFilter() {
           </div>
         </div>
         <div className="col-span-1 md:col-span-2 w-full">
-          <div className=" p-7 bg-white m-2 rounded-[15px]">
-            <div className="bg-[#C4D6D9] w-full rounded-[7px]  flex items-center justify-between  p-2">
-              <Image className="w-[25px] h-[25px]" src={clock}></Image>
-              <h2 className="text-[24px]">25:00</h2>
-            </div>
+      <div className=" p-5 mt-3 bg-white m-2 rounded-[15px]">
+        <div className="bg-[#C4D6D9] flex-col w-full rounded-[7px] flex items-center">
+          {/* Replace with Image component if you have a clock icon */}
+          <div className="flex gap-2 text-sky-700 items-center"> <TbClockFilled className="w-[35px] h-[35px] text-sky-800" />
+          <h2 className="text-[28px] font-semibold text-sky-800">{formatTime(time)}</h2></div>
+        
+          <div className=" ml-10 text-[14px] text-slate-600 flex justify-end gap-3 items-center">
+            <p>Min</p>
+            <p>Sec</p>
           </div>
         </div>
+        
+      </div>
+    </div>
       </div>
     </div>
   );

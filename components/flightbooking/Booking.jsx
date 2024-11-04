@@ -1,9 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 const Booking = () => {
+  const [details, setDetails] = useState(null);
   const [activeTab, setActiveTab] = useState("baggage"); // Default to "baggage"
   const [title, setTitle] = useState("MR"); // State for title selection (MR, MS, MRS)
+  useEffect(() => {
+    const storedDetails = localStorage.getItem("selectedFlight");
+    if (storedDetails) {
+      setDetails(JSON.parse(storedDetails));
+      console.log(storedDetails);
+    } else{
+      console.log('No Flight Details Found here')
+    }
+  }, []);
 
   return (
     <div className="
