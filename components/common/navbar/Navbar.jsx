@@ -11,6 +11,8 @@ import tour from "@/public/icons/tour.png";
 import visa from "@/public/icons/visa.png";
 import aboutImg from "@/public/icons/aboutImg.png";
 import Link from "next/link";
+import { PiAirplaneTakeoffBold } from "react-icons/pi";
+
 
 export default function Navbar() {
   const [scrollY, setScrollY] = useState(0); // State to track scroll position
@@ -111,7 +113,7 @@ export default function Navbar() {
                 }`}
                 onClick={() => setCategoryTab("flight")}
               >
-                <Image src={flight} alt="" className="w-[22px] h-[22px]" />
+                <PiAirplaneTakeoffBold className="w-[30px] h-[30px]"/>
                 <span className="text-[var(--secondary)] text-[16px] font-semibold">
                   Flight
                 </span>
@@ -137,7 +139,7 @@ export default function Navbar() {
                 }`}
                 onClick={() => setCategoryTab("tour")}
               >
-                <Image src={tour} alt="" className="w-[22px] h-[22px]" />
+                <Image src={tour} alt="" className="w-[22px] text-sky-950 h-[22px]" />
                 <span className="text-[var(--secondary)] text-[16px] font-semibold">
                   Tour
                 </span>
