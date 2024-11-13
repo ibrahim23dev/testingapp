@@ -42,7 +42,6 @@ const FlightSearch = () => {
   const [isOriginFocused, setIsOriginFocused] = useState(false);
   const [isDestinationFocused, setIsDestinationFocused] = useState(false);
 
-  
   const fetchFlightData = async () => {
     setLoading(true);
     setError('');
@@ -122,8 +121,11 @@ const FlightSearch = () => {
       });
 
       if (response.data.success) {
-
-        localStorage.setItem('flightResults', JSON.stringify(response.data.results));
+        const { sessionId, results } = response.data;
+        localStorage.setItem('flightResults', JSON.stringify({
+          sessionId,
+          results
+        }));
         router.push('/flights');
        
       } else {
