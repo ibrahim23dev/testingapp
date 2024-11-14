@@ -9,7 +9,12 @@ import { RiHotelFill } from "react-icons/ri";
 import { GiTreehouse } from "react-icons/gi";
 import { CiSearch } from "react-icons/ci";
 import { useRouter } from 'next/navigation';
-
+import { GoArrowSwitch } from "react-icons/go";
+import Image from 'next/image';
+import Flighticon from '@/public/flight (1).svg'
+import Hotelticon from '@/public/flight (2).svg'
+import Touricon from '@/public/flight (3).svg'
+import Visaicon from '@/public/flight (4).svg'
 const FlightSearch = () => {
 
   const router = useRouter();
@@ -19,14 +24,13 @@ const FlightSearch = () => {
     destination: []
   });
 
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const today = new Date().toISOString().split('T')[0];
   const [departureDate, setDepartureDate] = useState(today);
   const [returnDate, setReturnDate] = useState('');
-  const [originCode, setOriginCode] = useState('');
-  const [destinationCode, setDestinationCode] = useState('');
+  const [originCode, setOriginCode] = useState('JFK');
+  const [destinationCode, setDestinationCode] = useState('DAC');
   const [tripType, setTripType] = useState('OneWay'); // Default trip type is OneWay
   const [passengerType, setPassengerType] = useState('ADT');
   const [passengerQuantity, setPassengerQuantity] = useState(1);
@@ -259,29 +263,28 @@ const FlightSearch = () => {
         <div className="flex justify-center items-center px-4 md:px-8 lg:px-16 mt-28">
   <div className="flex relative flex-col items-center w-full max-w-[1600px]">
     {/* Tabs for Flight, Hotel, etc. */}
-    <div className="flex  lg:w-[700px] sm:w-[500px] bg-white shadow-lg items-center w-full md:w-[700px]  py-5 px-4 md:px-8 rounded-t-[20px] justify-center gap-0.5 md:gap-6">
-      <button className="py-2 ml-2 px-2 md:px-4 flex items-center w-[270px] border-b-4 border-blue-500">
-        <MdFlightTakeoff className="text-blue-600 w-6 md:w-10 h-6 md:h-10" />
+    <div className="flex relative top-12  lg:w-[700px] sm:w-[500px] bg-white shadow-lg items-center w-full md:w-[700px]  py-5 px-4 md:px-8 rounded-[20px] justify-center gap-0.5 md:gap-6">
+      <button className="py-2 gap-2 ml-2 px-2 md:px-4 flex items-center w-[140px] border-b-4 border-blue-500">
+       <Image src={Flighticon}/>
         <span className="text-blue-600 text-[16px] md:text-[20px] font-semibold">Flight</span>
       </button>
       <button className="py-2 px-2 md:px-4 flex items-center gap-1 text-gray-500">
-        <RiHotelFill className="w-5 md:w-10 h-5 md:h-10" />
+      <Image src={Visaicon}/>
         <span className="text-[16px] md:text-[20px] font-semibold">Hotel</span>
       </button>
       <button className="py-2 px-2 md:px-4 flex items-center gap-1 text-gray-500">
-        <GiTreehouse className="w-5 md:w-10 h-5 md:h-10" />
+      <Image src={Touricon}/>
         <span className="text-[16px] md:text-[20px] font-semibold">Tour</span>
       </button>
       <button className="py-2 mr-3 px-2 md:px-4 flex items-center gap-1 text-gray-500">
-        <LiaCcVisa className="w-5 md:w-10 h-5 md:h-10" />
+      <Image src={Hotelticon}/>
         <span className="text-[16px] md:text-[20px] font-semibold">Visa</span>
       </button>
     </div>
-
     {/* Form */}
     <div className="flex flex-col w-full bg-white shadow-lg rounded-b-[20px]  xl:rounded-[20px] lg:rounded-[20px] md:rounded-[20px] sm:rounded-t-none py-8 md:p-16">
       {/* Trip Type Selection */}
-      <div className="flex justify-center gap-2 md:gap-8 lg:mb-8 xl:mb-8 mb-3 md:mb-8">
+      <div className="flex justify-center mt-3 gap-2 md:gap-8 lg:mb-8 xl:mb-8 mb-3 md:mb-8">
         <label className="flex items-center gap-2">
           <input
             type="radio"
@@ -315,9 +318,9 @@ const FlightSearch = () => {
       </div>
 
       {/* Form Inputs */}
-      <div className="flex flex-wrap  gap-2">
+      <div className="flex   flex-wrap items-center">
         {/* Origin */}
-        <div className="flex flex-col py-1  md:items-start lg:items-start  w-full sm:w-auto">
+        <div className="flex  flex-col py-1  relative  left-12   md:items-start lg:items-start  w-full sm:w-auto">
           <label className="text-gray-600 ml-5  mb-2">From</label>
           <div className="relative">
             <input
@@ -328,8 +331,8 @@ const FlightSearch = () => {
                   : originCode
               }
               onChange={(e) => handleAirportChange(e, 'origin')}
-              placeholder="Enter Origin (e.g., DAC)"
-              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
+              placeholder="Enter "
+              className="border p-6 ml-5 text-blue-900  md:h-20 font-extrabold h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
               onFocus={() => setIsOriginFocused(true)}
               onBlur={() => setTimeout(() => setIsOriginFocused(false), 50)}
             />
@@ -354,7 +357,11 @@ const FlightSearch = () => {
             )}
           </div>
         </div>
-
+<div className=' bg-white shadow-lg  z-10 relative top-3.5 left-8 rounded-full w-16 h-16 border-[2px]'>
+<div className='flex justify-center mt-5 items-center'>
+  <GoArrowSwitch className=' w-5 h-5'/>
+</div>
+</div>
         {/* Destination */}
         <div className="flex flex-col items-start w-full sm:w-auto">
           <label className="text-gray-600 ml-5 mb-2">To</label>
@@ -364,7 +371,7 @@ const FlightSearch = () => {
               value={destinationCode}
               onChange={(e) => handleAirportChange(e, 'destination')}
               placeholder="Enter Destination (e.g., CXB)"
-              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
+              className="border p-6 ml-5 font-extrabold text-blue-900  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
               onFocus={() => setIsDestinationFocused(true)}
               onBlur={() => setTimeout(() => setIsDestinationFocused(false), 50)}
             />
@@ -394,7 +401,7 @@ const FlightSearch = () => {
             type="date"
             value={departureDate}
             onChange={(e) => setDepartureDate(e.target.value)}
-            className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
+            className="border p-3 ml-5 font-extrabold text-blue-900  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
           />
         </div>
 
@@ -406,7 +413,7 @@ const FlightSearch = () => {
               type="date"
               value={returnDate}
               onChange={(e) => setReturnDate(e.target.value)}
-              className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
+              className="border text-blue-900 font-extrabold p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
             />
           </div>
         )}
@@ -423,7 +430,7 @@ const FlightSearch = () => {
       value={`${totalTravelers} Traveler${totalTravelers > 1 ? "s" : ""} • ${passengers.classType}`}
       onClick={() => setShowModal(true)}
       readOnly
-      className="border p-3 ml-5  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
+      className="border p-3 ml-5 text-blue-900 font-extrabold  md:h-20 h-16 rounded-lg w-[270px] lg:w-64 md:w-64"
     />
   </div>
 
@@ -546,17 +553,18 @@ const FlightSearch = () => {
        {/* Search Button */}
    
     </div>
-    <div className='md:absolute sm:absolute lg:absolute relative md:mt-[360px] lg:mt-[360px] xl:mt-[360px] 2xl:mt-[360px] sm:mt-[360px]'>
+
+    <div className='md:absolute sm:absolute lg:absolute relative md:mt-[380px] lg:mt-[380px] xl:mt-[380px]  sm:mt-[360px]'>
     <button
                 onClick={fetchFlightData}
-                className=" text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-9 py-5 text-center me-2 mb-2"
+                className=" text-white w-56 bg-gradient-to-r from-purple-500 via-purple-600 rounded-full to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium  text-sm px-9 py-5 text-center me-2 mb-2"
               >
-                <div className=' flex items-center justify-center gap-2'> <span><CiSearch className=' w-7 h-7 text-white' /></span>
-                <span className=' text-[20px]'> Search Flights</span></div>
-               
+               <div className=' flex items-center justify-center gap-2'>  {/* <span><CiSearch className=' w-7 h-7 text-white' /></span> */}
+                <span className=' text-[20px]'> Search</span></div>
                 
     </button>
     </div>
+
   </div>
 </div>
         {/* Loader and Error Messages */}

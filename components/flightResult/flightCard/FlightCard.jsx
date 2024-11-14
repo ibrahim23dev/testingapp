@@ -132,6 +132,39 @@ export default function FlightCard() {
                       </button>
                     </div>
                   </div>
+                  
+                  {/* Expandable Details Section */}
+                  <div className="border-t pt-3 pb-3 sm:pt-4 sm:pb-4 flex flex-col sm:flex-row justify-between items-start text-xs sm:text-sm px-3 sm:px-5">
+                    {/* Flight Details */}
+                    <div className="mb-3 sm:mb-0">
+                      <button className="text-blue-600" onClick={() => toggleDetails(index)}>
+                        Flight Details {openDetailsIndex === index ? '▲' : '▼'}
+                      </button>
+                      {openDetailsIndex === index && (
+                        <div className="mt-2 border p-3 rounded-lg bg-gray-50 space-y-1 sm:space-y-2">
+                          <p><strong>Flight Number:</strong> {segment?.OperatingFlightNumber || 'N/A'}</p>
+                          <p><strong>Cabin Class:</strong> {segment?.CabinClassCode || 'N/A'}</p>
+                          <p><strong>Baggage Info:</strong> {segment?.CheckinBaggage?.[0]?.Value || 'N/A'} Checked, {segment?.CabinBaggage?.[0]?.Value || 'N/A'} Carry-on</p>
+                          <p><strong>Equipment:</strong> {segment?.Equipment || 'N/A'}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Refund Information */}
+                    <div>
+                      <button className="text-blue-600" onClick={() => toggleRefundable(index)}>
+                        Partially Refundable {openRefundableIndex === index ? '▲' : '▼'}
+                      </button>
+                      {openRefundableIndex === index && (
+                        <div className="mt-2 border p-3 rounded-lg bg-gray-50 space-y-1 sm:space-y-2">
+                          <p><strong>Refund Allowed:</strong> {flight.penaltiesData?.RefundAllowed ? 'Yes' : 'No'}</p>
+                          <p><strong>Refund Penalty:</strong> {flight.penaltiesData?.RefundPenaltyAmount || 'N/A'} {flight.penaltiesData?.Currency || 'N/A'}</p>
+                          <p><strong>Change Allowed:</strong> {flight.penaltiesData?.ChangeAllowed ? 'Yes' : 'No'}</p>
+                          <p><strong>Change Penalty:</strong> {flight.penaltiesData?.ChangePenaltyAmount || 'N/A'} {flight.penaltiesData?.Currency || 'N/A'}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
