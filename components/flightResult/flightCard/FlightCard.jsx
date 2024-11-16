@@ -13,7 +13,7 @@ export default function FlightCard() {
   const [flights, setFlights] = useState([]);
   const [openDetailsIndex, setOpenDetailsIndex] = useState(null);
   const [openRefundableIndex, setOpenRefundableIndex] = useState(null);
-  const router = useRouter();
+ 
 
   useEffect(() => {
     const storedFlights = localStorage.getItem("flightResults");
@@ -34,51 +34,30 @@ export default function FlightCard() {
   const toggleRefundable = (index) => {
     setOpenRefundableIndex(openRefundableIndex === index ? null : index);
   };
-
+  const router = useRouter();
   const handleSelectFlight = async (flight) => {
-    // Fetch the sessionId from localStorage or other methods you are using
-    const sessionId = localStorage.getItem("sessionId");
-  
-    // Check if sessionId is available
-    if (!sessionId) {
-      console.error("Session ID is missing");
-      return;  // Prevent further execution if sessionId is missing
-    }
-  
     try {
-      // Log the flight ID and sessionId for debugging purposes
-      console.log("Flight ID:", flight.flight_id);
-      console.log("Session ID:", sessionId);
-  
-      // Make the GET request with the sessionId in the headers
-      const response = await axios.get(
-        `https://fk-api.adbiyas.com/api/b2c/revalidated/${flight.flight_id}`,
-        {
-          headers: {
-            'sessionId': sessionId,  // Correctly passing sessionId here
-          },
-        }
+      const revalidationResponse = await axios.get(
+        `https://fk-api.adbiyas.com/api/b2c/revalidated/${flight.flight_id}`
       );
-  
-      console.log("API Response:", response.data);
-  
-      if (response.status === 200) {
-        const validatedFlightData = response.data;
-        localStorage.setItem("selectedFlight", JSON.stringify(validatedFlightData));
-        router.push("/booking");  // Redirect to the booking page
+      const flightData = revalidationResponse.data;
+
+      if (flightData) {
+        localStorage.setItem("selectedFlight", JSON.stringify(flightData));
+        router.push("/booking");
       } else {
-        console.error("Failed to validate flight:", response.statusText);
+        alert("Unable to revalidate the flight. Please try again.");
       }
     } catch (error) {
-      console.error("Error revalidating flight:", error);
-      if (error.response) {
-        console.error("Response data:", error.response.data);
-        console.error("Status:", error.response.status);
-        console.error("Headers:", error.response.headers);
-      }
+      console.error("Revalidation API error:", error);
+      alert("Error occurred while revalidating the flight.");
     }
   };
-  
+
+  if (!flights.length) {
+    return <p className="text-center mt-10">No flight data found.</p>;
+  }
+
   return (
     <section className="flex gap-[60px] w-full py-8">
       <div className="flex">

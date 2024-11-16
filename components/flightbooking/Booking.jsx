@@ -16,18 +16,28 @@ const Booking = () => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
+  const [selectedFlight, setSelectedFlight] = useState(null);
   const [details, setDetails] = useState(null);
   const [activeTab, setActiveTab] = useState("baggage"); // Default to "baggage"
   const [title, setTitle] = useState("MR"); // State for title selection (MR, MS, MRS)
-  useEffect(() => {
-    const storedFlights = localStorage.getItem("selectedFlight");
-    if (storedFlights) {
-      const parsedData = JSON.parse(storedFlights);
-      setFlights(parsedData.results); // Set only the results to the flights state
-    }
-  }, []);
 
+ // Load flight details from localStorage
+ useEffect(() => {
+  const flightData = localStorage.getItem("selectedFlight");
+  if (flightData) {
+    setSelectedFlight(JSON.parse(flightData));
+  }
+}, []);
+
+const getCabinClass = (code) => {
+  const cabinClassMap = {
+    Y: "Economy",
+    X: "First Class",
+    Z: "Premium Economy",
+  };
+
+  return cabinClassMap[code] || "Unknown Cabin Class"; // Fallback for unexpected codes
+};
 
   const [time, setTime] = useState(1800); // 30 minutes in seconds
 
@@ -48,6 +58,14 @@ const Booking = () => {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
+  // Ensure selectedFlight state is available before rendering the flight details
+  if (!selectedFlight) {
+    return <div>Loading flight data...</div>;
+  }
+
+  // Extract flight segments safely
+  const flightSegments = selectedFlight?.data?.flights[0]?.flightSegments || [];
+  const flightdata = selectedFlight?.data;
   return (
     <div className="
       p-6">
@@ -56,13 +74,14 @@ const Booking = () => {
         <div className="text-xl font-semibold text-blue-900">
           <h1 className=" text-[26px]">Review Your Booking</h1>
         </div>
-
-       
-        <div className=" flex gap-6">
+          <div></div>
+        {flightSegments.map((segment,index) => (
+          
+        <div key={index}  className=" flex gap-6">
           <div className=" flex flex-col gap-8">
              {/* Flight Info Section */}
           <div className="bg-white h-[250px] w-[900px] rounded-lg shadow-lg p-9 mb-4">
-          <h2 className="text-[24px] font-bold text-blue-900">DAC-JFK</h2>
+          <h2 className="text-[24px] font-bold text-blue-900">{`${flightSegments[0]?.DepartureAirportLocationCode}-${flightSegments[flightSegments.length - 1]?.ArrivalAirportLocationCode}`}</h2>
           <div className="flex justify-between items-center mt-2">
             <div className=" w-full">
               <div className=" w-full flex items-center justify-between">
@@ -72,28 +91,28 @@ const Booking = () => {
                    <p className="text-gray-700">
                     <div className=" flex gap-2">
                     <span><Image src={biman} className=" w-[80px]"/></span>
-                      <span>Biman Bangladesh Airlines</span>
+                      <span>{segment.operating_airline}</span>
                       
                     </div>
                     </p>
-                <p className="text-sm text-gray-500">BG 435 | DH8</p>
+                    <p className="text-sm text-gray-500">{`${segment.MarketingAirlineCode} ${segment.FlightNumber} | ${segment.OperatingAirlineEquipment}`}</p>
                 </span>
-                <span className="text-gray-700">Economy</span>
+                <span className="text-gray-700"> {getCabinClass(segment.CabinClassCode)}</span>
               </div>
              <div className=" flex items-center justify-center">
-              <span> Non-Stop</span>
+              <span>{segment.StopQuantity} Stops</span>
              </div>
              <div className=" mt-3 flex justify-between items-center">
-             <div> <p className="text-xl font-semibold text-gray-800">11:45</p></div>
-             <div> <p className="text-xl font-semibold text-gray-800">13:00</p></div>
+             <div> <p className="text-xl font-semibold text-gray-800">  {new Date(segment.DepartureDateTime).toLocaleTimeString()}</p></div>
+             <div> <p className="text-xl font-semibold text-gray-800"> {new Date(segment.ArrivalDateTime).toLocaleTimeString()}</p></div>
 
              </div>
            
              <div className=" flex items-center justify-between">
-              <div>   <p className="text-sm text-gray-500">Sun, 03 Nov, 2024</p></div>
+              <div>   <p className="text-sm text-gray-500"> {new Date(segment.DepartureDateTime).toDateString()}</p></div>
               <div>
              
-              <p className="text-sm text-gray-500">Sun, 03 Nov, 2024</p>
+              <p className="text-sm text-gray-500"> {new Date(segment.ArrivalDateTime).toDateString()}</p>
             </div>
             </div>
             
@@ -132,7 +151,7 @@ const Booking = () => {
                 <p className="text-[20px] text-blue-800 mb-2">Check-in</p>
               </div>
               <div className=" flex justify-between mr-8 items-center">
-                <p className="text-[16px]  mb-2">DAC-JFK</p>
+                <p className="text-[16px]  mb-2">{`${flightSegments[0]?.DepartureAirportLocationCode}-${flightSegments[flightSegments.length - 1]?.ArrivalAirportLocationCode}`}</p>
                 <p className="text-[16px]  mb-2">7 kg</p>
                 <p className="text-[16px]  mb-2">20 kg</p>
               </div>
@@ -147,9 +166,9 @@ const Booking = () => {
                 <p className="text-[20px]  text-blue-800 mb-2">Tax</p>
                 </div>
                 <div className=" flex ml-5 items-center justify-between">
-                <p className="text-[16px]  mb-2">Adult x 2</p>
-                <p className="text-[16px] pl-7  mb-2">BDT 5,024</p>
-                <p className="text-[16px]  mb-2">BDT 975</p>
+                <p className="text-[16px]  mb-2">  {segment.PassengerTypeQuantity?.Code === "ADT" ? "Adult" : "Other"} x {segment.PassengerTypeQuantity?.Quantity || 0}</p>
+                <p className="text-[16px] pl-7  mb-2">{flightdata.TotalFare.Amount} {flightdata.TotalFare.CurrencyCode}</p>
+                <p className="text-[16px]  mb-2">{flightdata.TotalTax.Amount} {flightdata.TotalTax.CurrencyCode}</p>
                 
                 </div>
                 
@@ -179,7 +198,7 @@ const Booking = () => {
    {/* Sing In to book faster and unlock all deals */}
 
    <div>
-    <Link href='/'>
+    <Link href='/auth-login'>
     <div className=" flex items-center gap-3">
       <h1 className=" text-[24px] font-semibold text-blue-900">Sign In</h1>
       <span className=" text-[18px]">to book faster and unlock all deals</span>
@@ -195,8 +214,16 @@ const Booking = () => {
           <h3 className="font-semibold text-[24px] text-blue-900">Enter Traveller Details</h3>
           <div className="border-b border-gray-300 my-2"></div>
           <div className="flex justify-between text-sm mb-2">
-            <p>Passenger 1</p>
-            <p>Adult</p>
+            <p>{segment.PassengerTypeQuantity?.Quantity || 2} Passenger</p>
+            <p>{segment.PassengerTypeQuantity?.Code === "ADT"
+    ? "Adult"
+    : segment.PassengerTypeQuantity?.Code === "CHD"
+    ? "Child"
+    : segment.PassengerTypeQuantity?.Code === "INF"
+    ? "Infant without a seat"
+    : segment.PassengerTypeQuantity?.Code === "INS"
+    ? "Infant with a seat"
+    : "Adult"}</p>
           </div>
 
           {/* Personal Details Section */}
@@ -329,6 +356,8 @@ const Booking = () => {
       </Modal>
           </div>
        
+
+
         <div className="flex gap-4 flex-col">
         <div className=" bg-white rounded-[8px] w-[400px] h-[150px] flex gap-5">
            <div className=" bg-slate-400 absolute ml-10 mt-8  w-[300px] rounded-[8px] p-8 h-[80px] flex justify-center items-center">
@@ -353,11 +382,11 @@ const Booking = () => {
         />
         <div>
           <h2 className="text-blue-600 font-medium">Flight</h2>
-          <h3 className="text-xl font-semibold">DAC - CXB</h3>
-          <p className="text-sm text-gray-500">One Way</p>
+          <h3 className="text-xl font-semibold">{`${flightSegments[0]?.DepartureAirportLocationCode}-${flightSegments[flightSegments.length - 1]?.ArrivalAirportLocationCode}`}</h3>
+          <p className="text-sm text-gray-500"></p>
         </div>
         <button className="ml-auto text-blue-600 focus:outline-none">
-          <span className="material-icons">expand_less</span> {/* Replace with a suitable icon */}
+          <span className="material-icons">{flightdata.DirectionInd}</span> {/* Replace with a suitable icon */}
         </button>
       </div>
 
@@ -367,26 +396,26 @@ const Booking = () => {
         <div className="text-gray-700 mt-2 space-y-1">
           <div className="flex justify-between">
             <span>Adult (1 traveler)</span>
-            <span className="font-medium">BDT 5,024</span>
+            <span className="font-medium">{flightdata.TotalFare.Amount} {flightdata.TotalFare.CurrencyCode}</span>
           </div>
           <div className="flex justify-between">
             <span>Tax</span>
-            <span className="font-medium">BDT 975</span>
+            <span className="font-medium">{flightdata.Taxes.Amount} {flightdata.Taxes.CurrencyCode}</span>
           </div>
           <hr className="my-2" />
           <div className="flex justify-between">
             <span>Sub-Total</span>
-            <span className="font-medium">BDT 5,999</span>
+            <span className="font-medium">{flightdata.TotalFare.Amount} {flightdata.TotalFare.CurrencyCode}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="flex items-center">
               Hot Deals <span className="ml-2 bg-blue-100 text-blue-600 font-semibold px-2 py-0.5 rounded">DOMB1124</span>
             </span>
-            <span className="text-green-600 font-medium">- BDT 602</span>
+            <span className="text-green-600 font-medium">- {flightdata.TotalFare.CurrencyCode} {flightdata.TotalFare.Amount}</span>
           </div>
           <div className="flex justify-between">
             <span>Convenience Charge</span>
-            <span className="font-medium">+ BDT 114</span>
+            <span className="font-medium">+ {flightdata.TotalFare.CurrencyCode} {flightdata.TotalFare.Amount} </span>
           </div>
         </div>
       </div>
@@ -395,16 +424,15 @@ const Booking = () => {
       <div className="bg-blue-50 p-4 rounded-lg text-blue-800">
         <div className="flex justify-between">
           <span className="text-lg font-semibold">You Pay (for 1 Traveler)</span>
-          <span className="text-xl font-bold">BDT 5,511</span>
+          <span className="text-xl font-bold">{flightdata.TotalFare.Amount} {flightdata.TotalFare.CurrencyCode}</span>
         </div>
-        <div className="text-green-600 text-sm text-right">You Save BDT 602</div>
+        <div className="text-green-600 text-sm text-right">{flightdata.TotalFare.Amount} {flightdata.TotalFare.CurrencyCode}</div>
       </div>
     </div>
         </div>
 
         </div>
-       
-
+        ))}
       </div>
     </div>
   );

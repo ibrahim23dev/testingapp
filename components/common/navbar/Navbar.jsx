@@ -2,16 +2,16 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import logo from "@/public/images/logo-white.png";
-import logoBlack from "@/public/images/logo-black.png";
+import logoBlack from "@/public/icons/logoFlight-removebg-preview.png";
 import usd from "@/public/icons/usd.png";
 import { IoIosArrowDown } from "react-icons/io";
-import flight from "@/public/icons/flight.png";
-import hotel from "@/public/icons/hotel.png";
-import tour from "@/public/icons/tour.png";
-import visa from "@/public/icons/visa.png";
+import flight from "@/public/flight (1).svg";
+import hotel from "@/public/flight (2).svg";
+import tour from "@/public/flight (3).svg";
+import visa from "@/public/flight (4).svg";
 import aboutImg from "@/public/icons/aboutImg.png";
 import Link from "next/link";
-import { PiAirplaneTakeoffBold } from "react-icons/pi";
+
 
 
 export default function Navbar() {
@@ -40,7 +40,7 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto p-4 flex justify-between items-center">
         {/* Logo */}
         <Link href={"/"}>
-          <Image src={logoBlack} alt="Logo" />
+          <Image src={logoBlack} alt="Logo" className=" w-[200px]" />
         </Link>
 
         {/* Right Section */}
@@ -101,7 +101,7 @@ export default function Navbar() {
         <nav className="max-w-7xl mx-auto p-4 flex justify-between items-center">
           {/* Logo */}
           <Link href={"/"}>
-            <Image src={logoBlack} alt="Logo" />
+            <Image src={logoBlack} alt="Logo" className=" w-[350px]" />
           </Link>
           <div className="   container  rounded-[22px] w-full px-32 mx-auto bottom-[-25px] hidden md:block">
             <div className="flex items-center justify-between px-14 flex-wrap">
@@ -113,10 +113,13 @@ export default function Navbar() {
                 }`}
                 onClick={() => setCategoryTab("flight")}
               >
-                <PiAirplaneTakeoffBold className="w-[30px] h-[30px]"/>
+                <div className=" flex flex-col items-center  gap-1">
+                <Image src={flight} alt="" className="w-[30px] h-[30px]" />
                 <span className="text-[var(--secondary)] text-[16px] font-semibold">
                   Flight
                 </span>
+                </div>
+                 
               </div>
               <div
                 className={`flex items-center gap-2 cursor-pointer ${
@@ -126,10 +129,13 @@ export default function Navbar() {
                 }`}
                 onClick={() => setCategoryTab("hotel")}
               >
-                <Image src={hotel} alt="" className="w-[22px] h-[22px]" />
+                 <div className=" flex flex-col items-center gap-1">
+                 <Image src={hotel} alt="" className="w-[28px] h-[28px]" />
                 <span className="text-[var(--secondary)] text-[16px] font-semibold">
                   Hotel
                 </span>
+                 </div>
+               
               </div>{" "}
               <div
                 className={`flex items-center gap-2 cursor-pointer ${
@@ -139,10 +145,13 @@ export default function Navbar() {
                 }`}
                 onClick={() => setCategoryTab("tour")}
               >
-                <Image src={tour} alt="" className="w-[22px] text-sky-950 h-[22px]" />
+                <div className=" flex flex-col items-center gap-1">
+                <Image src={tour} alt="" className="w-[28px] text-sky-950 h-[28px]" />
                 <span className="text-[var(--secondary)] text-[16px] font-semibold">
                   Tour
                 </span>
+                </div>
+                
               </div>{" "}
               <div
                 className={`flex items-center gap-2 cursor-pointer ${
@@ -152,10 +161,12 @@ export default function Navbar() {
                 }`}
                 onClick={() => setCategoryTab("visa")}
               >
-                <Image src={visa} alt="" className="w-[22px] h-[22px]" />
+                 <div className=" flex flex-col items-center gap-1">
+                 <Image src={visa} alt="" className="w-[22px] h-[22px]" />
                 <span className="text-[var(--secondary)] text-[16px] font-semibold">
                   Visa
                 </span>
+                 </div>
               </div>
               <div
                 className={`flex items-center gap-2 cursor-pointer ${
@@ -165,10 +176,13 @@ export default function Navbar() {
                 }`}
                 onClick={() => setCategoryTab("aboutus")}
               >
-                <Image src={aboutImg} alt="" className="w-[22px] h-[22px]" />
+                 <div className=" flex flex-col items-center gap-1">
+                 <Image src={aboutImg} alt="" className="w-[22px] h-[22px]" />
                 <span className="text-[var(--secondary)] text-[16px] font-semibold">
                   About us
                 </span>
+                 </div>
+                
               </div>
             </div>
           </div>
